@@ -6,10 +6,11 @@ import {
   useLoaderData,
   useLocation,
 } from "react-router-dom";
-import { getVans } from "../../api";
+// import { getVans } from "../../api";
+import { getVan } from "../../api/firebase";
 
 export function loader({ params }) {
-  return defer({ van: getVans(params.id) });
+  return defer({ van: getVan(params.id) });
 }
 
 function VanDetail() {

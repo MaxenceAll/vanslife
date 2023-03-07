@@ -7,10 +7,11 @@ import {
   Await,
 } from "react-router-dom";
 import { Outlet } from "react-router-dom/dist";
-import { getHostVans } from "../../api";
+// import { getHostVans } from "../../api";
+import { getVan } from "../../api/firebase";
 
 export function loader({ params }) {
-  return defer({ van: getHostVans(params.id) });
+  return defer({ van: getVan(params.id) });
 }
 
 export default function HostVanDetail() {
