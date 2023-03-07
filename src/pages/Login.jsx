@@ -1,91 +1,60 @@
-import React from "react"
-import { useNavigate, useLocation } from "react-router-dom"
-import { Navigate } from "react-router-dom/dist"
-import { loginUser } from "../api"
+import React from "react";
+import {
+    useNavigate,
+    useLocation,
+    Form,
+    useActionData,
+    useNavigation,
+} from "react-router-dom";
+import { loginUser } from "../api";
 
-/**
- * Challenge: Code the sad path 🙁
- * 5. Add an `error` state and default it to `null`. When the
- *    form is submitted, reset the errors to `null`. If there's
- *    an error from `loginUser` (add a .catch(err => {...}) in 
- *    the promise chain), set the error to the error that 
- *    comes back.
- * 6. Display the error.message below the `h1` if there's ever
- *    an error in state
- */
-
+export async function action({ request }) {
+    const formData = await request.formData();
+    const email = formData.get("email");
+    const password = formData.get("password");
+    try {
+        const data = await loginUser({ email, password });
+        localStorage.setItem("loggedin", true);
+        return data;
+    } catch (err) {
+        return {
+            error: err.message
+        }
+    }
+}
 export default function Login() {
-    const [loginFormData, setLoginFormData] = React.useState(
-        { email: "", password: "" }
-    )
-    const [status, setStatus] = React.useState("idle")
-    const [error, setError] = React.useState(null)
-    
-    const location = useLocation()
-    const navigate = useNavigate();
-    
-    function handleSubmit(e) {
-        e.preventDefault()
-        setStatus("submitting")
-        setError(null)
-        loginUser(loginFormData)
-            .then(data => {
-                // console.log(data)
-                localStorage.setItem("loggedin", true)
-                navigate("/host", { replace: true })
-            })
-            .catch(err => {
-                setError(err)
-            })
-            .finally(() =>{
-                setStatus("idle")
-            })
-    }
 
-    function handleChange(e) {
-        const { name, value } = e.target
-        setLoginFormData(prev => ({
-            ...prev,
-            [name]: value
-        }))
-    }
+    const location = useLocation();
+    const navigate = useNavigate();
+    const data = useActionData();    
+    const from = location.state?.from || "/host";
+    const navigation = useNavigation();
+    // console.log(navigation);
+
+    //   console.log(data);
+    //   console.log(from);
+    React.useEffect(() => {
+        if (data?.token) {
+            navigate(from, { replace: true })
+        }
+    }, [data])
 
     return (
         <div className="login-container">
-            {
-                location.state?.message && 
+            {location.state?.message && (
                 <h3 className="login-error">{location.state.message}</h3>
-            }
+            )}
             <h1>Sign in to your account</h1>
             {
-                error && 
-                <h3 className="login-error">{error.message}</h3>
+                data?.error && <h3 className="login-error">{data?.error}</h3>
             }
-            <form onSubmit={handleSubmit} className="login-form">
-                <input
-                    name="email"
-                    onChange={handleChange}
-                    type="email"
-                    placeholder="Email address"
-                    value={loginFormData.email}
-                />
-                <input
-                    name="password"
-                    onChange={handleChange}
-                    type="password"
-                    placeholder="Password"
-                    value={loginFormData.password}
-                />
-                <button 
-                    disabled={status === "submitting"}
-                >
-                    {status === "submitting" 
-                        ? "Logging in..." 
-                        : "Log in"
-                    }
+            <Form action="/login" method="post" className="login-form">
+                <input name="email" type="email" placeholder="Email address" />
+                <input name="password" type="password" placeholder="Password" />
+                <button disabled={navigation.state === "submitting"}>
+                    {navigation.state === "submitting" ? "Logging in..." : "Log in"}
                 </button>
-            </form>
+            </Form>
         </div>
-    )
-
+    );
 }
