@@ -37,7 +37,7 @@ export default function Login() {
         if (data?.token) {
             navigate(from, { replace: true })
         }
-    }, [data])
+    }, [data, from, navigate])
 
     return (
         <div className="login-container">
