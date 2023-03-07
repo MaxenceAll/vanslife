@@ -2,32 +2,40 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { getVans } from "../../api";
 
+import { useLoaderData } from "react-router-dom/dist";
+
+
+export function loader(){
+  return getVans()
+}
+
 function Vans() {
-  const [vans, setVans] = useState([]);
+  // const [vans, setVans] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const typeFilter = searchParams.get("type");
   // console.log(typeFilter);
   // console.log(searchParams.toString())
-
-  const [loading, setLoading] = useState(false)
+  // const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const vans = useLoaderData()
+  // console.log(data);
 
-  useEffect(() => {
-    async function loadVans() {
-        setLoading(true);
-        try {
-          const data = await getVans()          
-          setVans(data)
-        } catch (error) {
-          // console.error("Error:")
-          // console.error(error)
-          setError(error);
-        }finally{
-          setLoading(false)
-        }
-    }    
-    loadVans()
-}, [])
+//   useEffect(() => {
+//     async function loadVans() {
+//         setLoading(true);
+//         try {
+//           const data = await getVans()          
+//           setVans(data)
+//         } catch (error) {
+//           // console.error("Error:")
+//           // console.error(error)
+//           setError(error);
+//         }finally{
+//           setLoading(false)
+//         }
+//     }    
+//     loadVans()
+// }, [])
 
   // console.log(vans);
   const filteredVans = typeFilter
@@ -36,9 +44,9 @@ function Vans() {
 
   // console.log(filteredVans);
 
-  if (loading) {
-    return <h1>Loading...</h1>
-  }
+  // if (loading) {
+  //   return <h1>Loading...</h1>
+  // }
   if (error) {
     return <h1>There is an error ({error.message})</h1>
   }

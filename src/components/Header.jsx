@@ -1,4 +1,5 @@
 import { Link, NavLink } from "react-router-dom/dist";
+import loginImg from "../assets/images/loginImg.svg"
 
 function Header() {
   return (
@@ -23,6 +24,12 @@ function Header() {
         >
             Vans
         </NavLink>
+        <Link to="login" className="login-link">
+                    <img 
+                        src={loginImg}
+                        className="login-icon"
+                    />
+                </Link>
     </nav>
 </header>
   );
